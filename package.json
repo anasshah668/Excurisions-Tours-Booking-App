@@ -10,6 +10,9 @@
     "dev": "nodemon index.js",
     "swagger": "node ./Swagger.js"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

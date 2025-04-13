@@ -5,7 +5,6 @@ import authRoutes from "./routes/authRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
-// import swaggerDocument from "./swagger-output.json" assert { type: "json" };
 import cors from "cors";
 // Load environment variables
 config();
