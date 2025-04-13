@@ -1,0 +1,55 @@
+import { Schema, model } from "mongoose";
+import pkg from "bcryptjs";
+import web_token from "jsonwebtoken";
+const { compare, genSalt, hash } = pkg;
+const { sign } = web_token;
+const userSchema = new Schema({
+  firstname: { type: String, required: true },
+  lastname: { type: String, required: true },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  userType: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  resetOTP: { type: String },
+  resetOTPExpires: { type: Date },
+});
+
+// Hash password before saving the user
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  const salt = await genSalt(10);
+  this.password = await hash(this.password, salt);
+  next();
+});
+
+// Method to compare entered password with hashed password
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await compare(enteredPassword, this.password);
+};
+
+//Generate JWT token
+userSchema.methods.getSignedJwtToken = function () {
+  return sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
+};
+
+export default model("User", userSchema);
