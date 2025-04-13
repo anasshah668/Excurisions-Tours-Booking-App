@@ -32,6 +32,10 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/trips", tripRoutes);
+
+app.get("/", (req, res) => {
+  console.log(res.json({ message: "Server running" }));
+});
 // Start the server
 const port = process.env.PORT || 3002;
 app.listen(port, () => {
