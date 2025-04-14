@@ -2,8 +2,7 @@ import swaggerAutogen from "swagger-autogen";
 
 const doc = {
   info: {
-    title: "Pharmacy POS Software",
-    //  description: "Description",
+    title: "Excurions Trips",
     version: "1.0.0",
   },
   host: "localhost:3001",
