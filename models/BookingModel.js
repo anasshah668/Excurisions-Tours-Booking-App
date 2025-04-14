@@ -37,8 +37,7 @@ const bookingschema = new Schema({
     type: String,
     required: true,
   },
-  customerAddress: String,
-  required: true,
+  customerAddress: { type: String, required: true },
 });
 
 // Sync indexes to ensure no old unique constraints are in place
