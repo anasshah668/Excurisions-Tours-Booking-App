@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": ""
   },
-  "host": "localhost:3005",
+  "host": "https://excurisions-tours-booking-app.vercel.app",
   "basePath": "/",
   "schemes": ["http"],
   "paths": {
