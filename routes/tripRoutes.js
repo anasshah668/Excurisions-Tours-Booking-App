@@ -5,6 +5,7 @@ import User from "../models/userModel.js";
 const router = express.Router();
 import { mongoose } from "mongoose";
 router.post("/create-trip", protect, async (req, res) => {
+  // #swagger.tags = ['Trip Routes']
   try {
     const {
       companyId,
@@ -74,6 +75,7 @@ router.post("/create-trip", protect, async (req, res) => {
 });
 
 router.post("/get-trips", protect, async (req, res) => {
+  // #swagger.tags = ['Trip Routes']
   try {
     const { userId } = req.body; // Get the userId from query string
     // Validate if userId is provided

@@ -4,6 +4,7 @@ import Booking from "../models/BookingModel.js";
 const router = express.Router();
 import { mongoose } from "mongoose";
 router.post("/bookTrip", protect, async (req, res) => {
+  // #swagger.tags = ['Booking Routes']
   try {
     const { bookingid, tripId, userId, companyId, noOfSeats, seatPerSeat } =
       req.body;
@@ -60,6 +61,7 @@ router.post("/bookTrip", protect, async (req, res) => {
 });
 
 router.post("/getBookingsByUser", protect, async (req, res) => {
+  // #swagger.tags = ['Booking Routes']
   try {
     const { userId } = req.body;
 

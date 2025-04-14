@@ -5,9 +5,7 @@ import pkg from "bcryptjs";
 const { compare, genSalt, hash } = pkg;
 import { sendEmail } from "../shared/common.js";
 const router = Router();
-
 // Register a new user
-
 router.post("/register", async (req, res) => {
   // #swagger.tags = ['Auth']
   try {
@@ -70,6 +68,7 @@ router.post("/register", async (req, res) => {
 
 // Register as Company
 router.post("/register-company", async (req, res) => {
+  // #swagger.tags = ['Auth']
   try {
     const {
       companyName,
