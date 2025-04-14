@@ -8,7 +8,8 @@ import fs from "fs";
 import cors from "cors";
 // Load environment variables
 config();
-const swaggerDocument = JSON.parse(fs.readFileSync("./swagger-output.json"));
+// const swaggerDocument = JSON.parse(fs.readFileSync("./swagger-output.json"));
+const swaggerDocument = fs.readFileSync("./swagger-output.json", "utf8");
 const app = express();
 const corsOptions = {
   origin: "http://localhost:5173", // Replace with your frontend URL
