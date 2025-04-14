@@ -10,12 +10,6 @@ node_modules/
 # OS-specific
 .DS_Store
 
-# Vercel config (optional, if deploying to other services)
-.vercel/
-
-# Swagger output (optional if auto-generated)
-swagger-output.json
-
 # Dependency lock (optional, choose one)
 package-lock.json
 yarn.lock
