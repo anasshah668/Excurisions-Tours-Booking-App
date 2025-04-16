@@ -4,6 +4,8 @@ import { config } from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import paymentRoutes from "./routes/stripesRoute.js";
+import uploadRoutes from "./routes/GateWayRoute/uploadRoute.js";
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 import path from "path";
@@ -47,6 +49,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/auth", authRoutes);
 app.use("/api/trips", tripRoutes);
 app.use("/api/booking", bookingRoutes);
+app.use("/api/payment", paymentRoutes);
+app.use("/api/gateWay", uploadRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "Server running" });
 });

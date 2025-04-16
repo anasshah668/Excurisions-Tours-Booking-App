@@ -1,7 +1,10 @@
 import User from "../models/userModel.js";
 import web_token from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import { config } from "dotenv";
+
 const { verify } = web_token;
+config();
 export const protect = async (req, res, next) => {
   let token;
   // Check if the authorization header is present and starts with 'Bearer'
@@ -63,4 +66,15 @@ export const sendEmail = async (to, subject, resetCode) => {
     subject,
     html: htmlTemplate,
   });
+};
+
+export const convertToPaise = (amount, currency) => {
+  if (currency.toLowerCase() === "pkr") {
+    return amount;
+  }
+  return amount;
+};
+export const convertPKRtoUSDCents = (amountInPKR, exchangeRate = 278) => {
+  const amountInUSD = amountInPKR / exchangeRate;
+  return Math.round(amountInUSD * 100); // Stripe needs cents
 };
