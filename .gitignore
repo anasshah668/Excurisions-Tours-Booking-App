@@ -13,5 +13,3 @@ node_modules/
 # Dependency lock (optional, choose one)
 package-lock.json
 yarn.lock
-
-.env
