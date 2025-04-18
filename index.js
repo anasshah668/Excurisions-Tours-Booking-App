@@ -6,6 +6,7 @@ import tripRoutes from "./routes/tripRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import paymentRoutes from "./routes/stripesRoute.js";
 import uploadRoutes from "./routes/GateWayRoute/uploadRoute.js";
+import productRoutes from "./routes/ProductRoute.js";
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 import path from "path";
@@ -51,6 +52,7 @@ app.use("/api/trips", tripRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/gateWay", uploadRoutes);
+app.use("/api/product", productRoutes);
 app.get("/", (req, res) => {
   res.json({ message: "Server running" });
 });
