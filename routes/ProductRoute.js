@@ -3,6 +3,7 @@ import express from "express";
 import Product from "../models/ProductModel.js";
 
 const router = express.Router();
+
 router.post("/showProduct", async (req, res) => {
   try {
     const { productName, productPrice, productUrl } = req.body;
@@ -11,16 +12,17 @@ router.post("/showProduct", async (req, res) => {
     const filter = {};
 
     if (productName && productName.trim() !== "") {
-      filter.productName = { $regex: productName, $options: "i" };
+      filter.productName = { $regex: productName, $options: "i" }; // Case-insensitive search for product name
     }
 
     // Check if productPrice is provided and not zero
     if (productPrice && productPrice !== 0) {
-      filter.productPrice = productPrice;
+      // Filter products with price less than or equal to the provided value
+      filter.productPrice = { $lte: productPrice };
     }
 
     if (productUrl && productUrl.trim() !== "") {
-      filter.productUrl = { $regex: productUrl, $options: "i" };
+      filter.productUrl = { $regex: productUrl, $options: "i" }; // Case-insensitive search for product URL
     }
 
     const products = await Product.find(filter).sort({ createdAt: -1 });
