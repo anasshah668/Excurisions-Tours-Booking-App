@@ -6,11 +6,6 @@ const { sign } = web_token;
 const userSchema = new Schema({
   firstname: { type: String, required: true },
   lastname: { type: String, required: true },
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
   password: {
     type: String,
     required: true,
@@ -27,6 +22,14 @@ const userSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  gender: {
+    type: String,
+    required: true,
+  },
+  dateOfBirth: {
+    type: String,
+    required: true,
   },
   resetOTP: { type: String },
   resetOTPExpires: { type: Date },

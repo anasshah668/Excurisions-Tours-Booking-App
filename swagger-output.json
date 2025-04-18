@@ -40,9 +40,6 @@
                 "lastname": {
                   "example": "any"
                 },
-                "username": {
-                  "example": "any"
-                },
                 "password": {
                   "example": "any"
                 },
@@ -136,7 +133,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "username": {
+                "email": {
                   "example": "any"
                 },
                 "password": {

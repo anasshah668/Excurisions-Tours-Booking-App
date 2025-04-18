@@ -9,27 +9,31 @@ const router = Router();
 router.post("/register", async (req, res) => {
   // #swagger.tags = ['Auth']
   try {
-    const { firstname, lastname, username, password, email, userType } =
-      req.body;
+    const {
+      firstname,
+      lastname,
+      password,
+      email,
+      userType,
+      gender,
+      dateOfBirth,
+    } = req.body;
     // Check if all required fields are provided
     if (
       !firstname ||
       !lastname ||
-      !username ||
       !password ||
       !userType ||
-      !email
+      !email ||
+      !gender ||
+      !dateOfBirth
     ) {
       return res
         .status(400)
         .json({ message: "All required fields must be provided" });
     }
-    // Check if the username is already taken
-    const existingUser = await User.findOne({ username });
+
     const existingEmail = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "Username already exists" });
-    }
     if (existingEmail) {
       return res.status(400).json({ message: "Email already exists" });
     }
@@ -37,10 +41,11 @@ router.post("/register", async (req, res) => {
     const newUser = new User({
       firstname,
       lastname,
-      username,
       password, // Password will be hashed by the pre-save hook in the model
       userType,
       email,
+      gender,
+      dateOfBirth,
     });
 
     // Save the user to the database
@@ -52,10 +57,11 @@ router.post("/register", async (req, res) => {
       user: {
         firstname: newUser.firstname,
         lastname: newUser.lastname,
-        username: newUser.username,
-        userType: newUser.userType,
         email: newUser.email,
+        userType: newUser.userType,
         userId: newUser.id,
+        dateOfBirth: newUser.dateOfBirth,
+        gender: newUser.gender,
       },
     });
   } catch (error) {
@@ -79,6 +85,8 @@ router.post("/register-company", async (req, res) => {
       companyEmail,
       password,
       companyLogoUrl,
+      gender,
+      dateOfBirth,
     } = req.body;
 
     // Step 1: Check if the company phone number or email already exists
@@ -100,6 +108,8 @@ router.post("/register-company", async (req, res) => {
       companyAddress,
       companyEmail,
       password,
+      gender,
+      dateOfBirth,
       companyLogoUrl,
     });
 
@@ -115,10 +125,11 @@ router.post("/register-company", async (req, res) => {
       _id: newCompany._id, // Set the user _id to be the same as the company _id
       firstname: companyOwnerFirstName,
       lastname: companyOwnerLastName,
-      username: companyEmail, // Using the email as the username (you can change this as needed)
-      password, // The password should already be hashed as we did for the company
       email: companyEmail,
-      userType: "company", // Setting the userType to 'company' for company admin
+      password, // The password should already be hashed as we did for the company
+      userType: "company",
+      gender: gender, // Setting the userType to 'company' for company admin
+      dateOfBirth: dateOfBirth,
     });
 
     // Save the user to the database
@@ -140,7 +151,6 @@ router.post("/register-company", async (req, res) => {
       user: {
         firstname: newUser.firstname,
         lastname: newUser.lastname,
-        username: newUser.username,
         email: newUser.email,
         userType: newUser.userType,
       },
@@ -157,10 +167,10 @@ router.post("/register-company", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   // #swagger.tags = ['Auth']
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -173,7 +183,7 @@ router.post("/login", async (req, res) => {
     res.status(200).json({
       token,
       userId: user._id,
-      username: user.username,
+      email: user.email,
       message: "Successfully Login",
       status: 200,
     });
