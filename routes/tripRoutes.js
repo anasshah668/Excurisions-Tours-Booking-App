@@ -110,4 +110,33 @@ router.post("/get-trips", protect, async (req, res) => {
   }
 });
 
+router.post("/getUnAuthTrips", async (req, res) => {
+  // #swagger.tags = ['Trip Routes']
+  try {
+    const { query } = req.body;
+
+    const filter = query
+      ? {
+          $or: [
+            { tripTitle: { $regex: query, $options: "i" } },
+            { destination: { $regex: query, $options: "i" } },
+          ],
+        }
+      : {}; // Empty filter returns all documents
+
+    const trips = await Trip.find(filter);
+
+    res.status(200).json({
+      message: "Trips fetched successfully",
+      trips,
+      status: 200,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+});
+
 export default router;
