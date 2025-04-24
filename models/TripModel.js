@@ -10,6 +10,10 @@ const tripSchema = new Schema({
     type: String, // Store companyId as a string (or ObjectId)
     required: true, // CompanyId is required but not unique (can have multiple trips from the same company)
   },
+  companyName: {
+    type: String, // Store companyId as a string (or ObjectId)
+    required: false, // CompanyId is required but not unique (can have multiple trips from the same company)
+  },
   tripTitle: {
     type: String,
     required: true, // Trip title is required but not unique, allowing duplicates for the same company

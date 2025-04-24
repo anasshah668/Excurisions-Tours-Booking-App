@@ -1,9 +1,9 @@
 import express from "express";
 import Trip from "../models/TripModel.js";
+import Company from "../models/CompanyModel.js";
 import { protect } from "../shared/common.js";
 import User from "../models/userModel.js";
 const router = express.Router();
-import { mongoose } from "mongoose";
 router.post("/create-trip", protect, async (req, res) => {
   // #swagger.tags = ['Trip Routes']
   try {
@@ -19,7 +19,6 @@ router.post("/create-trip", protect, async (req, res) => {
       tripImageUrl,
     } = req.body;
 
-    // Validate if all required fields are provided
     if (
       !companyId ||
       !tripTitle ||
@@ -33,10 +32,14 @@ router.post("/create-trip", protect, async (req, res) => {
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
-
-    // Create a new trip
+    const company = await Company.findOne({ companyId });
+    if (!company) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+    const companyName = company.companyName;
     const newTrip = new Trip({
-      companyId, // CompanyId is passed directly, no need to look it up
+      companyId,
+      companyName,
       tripTitle,
       description,
       destination,
@@ -46,15 +49,12 @@ router.post("/create-trip", protect, async (req, res) => {
       availableSeats,
       tripImageUrl,
     });
-
-    // Save the new trip in the database
     await newTrip.save();
-
-    // Return success message with the created trip details
     res.status(201).json({
       message: "Trip created successfully",
       trip: {
         companyId: newTrip.companyId,
+        companyName: newTrip.companyName,
         tripTitle: newTrip.tripTitle,
         description: newTrip.description,
         destination: newTrip.destination,
@@ -77,27 +77,22 @@ router.post("/create-trip", protect, async (req, res) => {
 router.post("/get-trips", protect, async (req, res) => {
   // #swagger.tags = ['Trip Routes']
   try {
-    const { userId } = req.body; // Get the userId from query string
-    // Validate if userId is provided
+    const { userId } = req.body;
     if (!userId) {
       return res.status(400).json({ message: "userId is required" });
     }
-    // Find the user by _id (MongoDB default primary key)
-    const user = await User.findById(userId); // No change here
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    // Check the userType of the user
     const { userType, id } = user;
     let trips;
     if (userType === "user") {
-      // If userType is 0, show all trips
       trips = await Trip.find();
     }
     if (userType === "company") {
       trips = await Trip.find({ companyId: user.id });
     }
-    // Return the trips
     res.status(200).json({
       message: "Trips fetched successfully",
       trips,
