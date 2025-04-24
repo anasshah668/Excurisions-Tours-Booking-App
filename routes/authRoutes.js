@@ -268,7 +268,7 @@ router.post("/verifyOTP", async (req, res) => {
   res.json({ message: "OTP verified", status: 200 });
 });
 
-router.post("/resetPassword", async (res, req) => {
+router.post("/resetPassword", async (req, res) => {
   // #swagger.tags = ['Auth']
   const { email, newPassword } = req.body;
   const user = await User.findOne({ email });
