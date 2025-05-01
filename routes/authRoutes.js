@@ -272,9 +272,8 @@ router.post("/resetPassword", async (req, res) => {
   // #swagger.tags = ['Auth']
   const { email, newPassword } = req.body;
   const user = await User.findOne({ email });
-  const salt = await genSalt(10);
   if (user) {
-    user.password = await hash(newPassword, salt);
+    user.password = newPassword;
     user.resetOTP = undefined;
     user.resetOTPExpires = undefined;
     await user.save();

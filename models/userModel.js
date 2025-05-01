@@ -33,6 +33,7 @@ const userSchema = new Schema({
   },
   resetOTP: { type: String },
   resetOTPExpires: { type: Date },
+  googleId: { type: String, unique: true, sparse: true },
 });
 
 // Hash password before saving the user
