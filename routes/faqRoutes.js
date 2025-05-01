@@ -1,11 +1,9 @@
 import express from "express";
 import Faq from "../models/faqsModel.js";
 import natural from "natural";
-import multer from "multer";
 import fs from "fs";
 import Fuse from "fuse.js";
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
 const tokenizer = new natural.WordTokenizer();
 // Get a specific FAQ based on the user question
 const stopWords = [
@@ -94,7 +92,7 @@ router.get("/faq", async (req, res) => {
     res.status(500).json({ message: "Error processing your question" });
   }
 });
-router.post("/upload-faq", upload.single("faqFile"), async (req, res) => {
+router.post("/upload-faq", async (req, res) => {
   try {
     const filePath = req.file.path;
     const rawData = fs.readFileSync(filePath);
