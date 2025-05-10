@@ -22,6 +22,18 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
+  bookedTrips: {
+    type: String,
+    required: false,
+  },
+  bio: {
+    type: String,
+    required: false,
+  },
+  profileImage: {
+    type: String,
+    required: false,
+  },
   WalletBalance: {
     type: String,
     required: false,

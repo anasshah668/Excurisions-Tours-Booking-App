@@ -280,7 +280,20 @@ router.get("/getUserAgainstId", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    // await User.updateMany(
+    //   {},
+    //   {
+    //     $set: {
+    //       phone: "",
+    //       address: "",
+    //       bio: "",
+    //       WalletBalance: 0,
+    //       profileImage: "",
+    //       pastTrips: 0,
+    //       bookedTrips: 0,
+    //     },
+    //   }
+    // );
     return res.status(200).json({
       status: 200,
       success: true,
@@ -291,12 +304,43 @@ router.get("/getUserAgainstId", async (req, res) => {
         gender: user.gender,
         dateOfBirth: user.dateOfBirth,
         phone: user.phone,
+        address: user.address,
         pastTrips: user.pastTrips,
         balance: user.WalletBalance,
+        bookedTrips: user.bookedTrips,
+        profileImage: user.profileImage,
+        bio: user.bio,
       },
     });
   } catch (error) {
     console.error("Error fetching user by ID:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+});
+// PUT /api/user/updateUser
+router.put("/updateUser", async (req, res) => {
+  const { id } = req.query;
+  const { phone, address, bio, profileImage } = req.body;
+  try {
+    if (!id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.phone = phone ?? user.phone;
+    user.address = address ?? user.address;
+    user.profileImage = profileImage ?? user.profileImage;
+    user.bio = bio ?? user.bio;
+    await user.save();
+    return res.status(200).json({
+      status: 200,
+      success: true,
+      message: "User updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
     return res.status(500).json({ message: "Server Error" });
   }
 });
