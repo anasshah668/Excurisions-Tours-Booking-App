@@ -10,6 +10,22 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String,
+    required: false,
+  },
+  phone: {
+    type: String,
+    required: false,
+  },
+  pastTrips: {
+    type: String,
+    required: false,
+  },
+  WalletBalance: {
+    type: String,
+    required: false,
+  },
   email: {
     type: String,
     required: true,

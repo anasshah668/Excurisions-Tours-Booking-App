@@ -4,8 +4,13 @@ import Company from "../models/CompanyModel.js";
 import pkg from "bcryptjs";
 const { compare, genSalt, hash } = pkg;
 import { sendEmail } from "../shared/common.js";
+
+import db from "../config/firebaseConfiguration.js";
 const router = Router();
 // Register a new user
+router.post("/", async (req, res) => {
+  const { name, email } = req.body;
+});
 router.post("/register", async (req, res) => {
   // #swagger.tags = ['Auth']
   try {
@@ -66,6 +71,76 @@ router.post("/register", async (req, res) => {
     });
   } catch (error) {
     console.error("Error registering user:", error.message); // Log detailed error
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+});
+
+router.post("/registerUser", async (req, res) => {
+  // #swagger.tags = ['Auth']
+  try {
+    const {
+      firstname,
+      lastname,
+      password,
+      email,
+      userType,
+      gender,
+      dateOfBirth,
+    } = req.body;
+
+    if (
+      !firstname ||
+      !lastname ||
+      !password ||
+      !userType ||
+      !email ||
+      !gender ||
+      !dateOfBirth
+    ) {
+      return res
+        .status(400)
+        .json({ message: "All required fields must be provided" });
+    }
+
+    // Check if user already exists
+    const usersRef = db.collection("users");
+    const existingQuery = await usersRef.where("email", "==", email).get();
+
+    if (!existingQuery.empty) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // Create user data
+    const newUserData = {
+      firstname,
+      lastname,
+      password, // You should hash this before storing in production
+      userType,
+      email,
+      gender,
+      dateOfBirth,
+      createdAt: new Date(),
+    };
+
+    // Add user to Firestore
+    const docRef = await usersRef.add(newUserData);
+
+    res.status(201).json({
+      message: "User registered successfully",
+      user: {
+        firstname,
+        lastname,
+        email,
+        userType,
+        userId: docRef.id,
+        gender,
+        dateOfBirth,
+      },
+    });
+  } catch (error) {
+    console.error("Error registering user:", error.message);
     res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });
@@ -168,7 +243,6 @@ router.post("/register-company", async (req, res) => {
 router.post("/login", async (req, res) => {
   // #swagger.tags = ['Auth']
   const { email, password } = req.body;
-
   try {
     const user = await User.findOne({ email });
     if (!user) {
@@ -190,6 +264,40 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Internal Server error" });
+  }
+});
+
+router.get("/getUserAgainstId", async (req, res) => {
+  const { id } = req.query;
+
+  try {
+    if (!id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      status: 200,
+      success: true,
+      data: {
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        gender: user.gender,
+        dateOfBirth: user.dateOfBirth,
+        phone: user.phone,
+        pastTrips: user.pastTrips,
+        balance: user.WalletBalance,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    return res.status(500).json({ message: "Server Error" });
   }
 });
 
