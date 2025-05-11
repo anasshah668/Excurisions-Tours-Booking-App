@@ -331,6 +331,7 @@ router.post("/login", async (req, res) => {
       userId: user._id,
       userType: user.userType,
       email: user.email,
+      profileImage: user.profileImage,
       message: "Successfully Login",
       status: 200,
     });
