@@ -283,6 +283,7 @@ router.post("/registerCompany", async (req, res) => {
 
     res.status(201).json({
       message: "Company registration submitted and pending approval.",
+      status: 200,
     });
   } catch (error) {
     console.error(error);
@@ -498,7 +499,9 @@ router.post("/sendCompanyEmailOtp", async (req, res) => {
       "OnBoarding Email Verification as Tour Operating Company",
       `${otp}`
     );
-    res.status(200).json({ message: "OTP sent to email successfully." });
+    res
+      .status(200)
+      .json({ message: "OTP sent to email successfully.", status: 200 });
   } catch (error) {
     console.error(error);
     res
