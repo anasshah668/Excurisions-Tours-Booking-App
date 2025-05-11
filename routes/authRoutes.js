@@ -1,6 +1,7 @@
 import { Router } from "express";
 import User from "../models/userModel.js";
 import Company from "../models/CompanyModel.js";
+import PendingCompany from "../models/PendingCompany.js";
 import pkg from "bcryptjs";
 const { compare, genSalt, hash } = pkg;
 import { sendEmail } from "../shared/common.js";
@@ -148,8 +149,92 @@ router.post("/registerUser", async (req, res) => {
 });
 
 // Register as Company
-router.post("/register-company", async (req, res) => {
-  // #swagger.tags = ['Auth']
+// router.post("/register-company", async (req, res) => {
+//   // #swagger.tags = ['Auth']
+//   try {
+//     const {
+//       companyName,
+//       companyOwnerFirstName,
+//       companyOwnerLastName,
+//       companyPhoneNo,
+//       companyAddress,
+//       companyEmail,
+//       password,
+//       companyLogoUrl,
+//       gender,
+//       dateOfBirth,
+//     } = req.body;
+
+//     // Step 1: Check if the company phone number or email already exists
+//     const existingCompany = await Company.findOne({
+//       $or: [{ companyPhoneNo }, { companyEmail }],
+//     });
+//     if (existingCompany) {
+//       return res.status(400).json({
+//         message: "Company with this phone number or email already exists",
+//       });
+//     }
+
+//     // Step 2: Create a new company
+//     const newCompany = new Company({
+//       companyName,
+//       companyOwnerFirstName,
+//       companyOwnerLastName,
+//       companyPhoneNo,
+//       companyAddress,
+//       companyEmail,
+//       password,
+//       gender,
+//       dateOfBirth,
+//       companyLogoUrl,
+//     });
+//     // Save the company to the database
+//     await newCompany.save();
+
+//     // Step 3: Create the corresponding user
+//     const newUser = new User({
+//       _id: newCompany._id, // Set the user _id to be the same as the company _id
+//       firstname: companyOwnerFirstName,
+//       lastname: companyOwnerLastName,
+//       email: companyEmail,
+//       password, // The password should already be hashed as we did for the company
+//       userType: "company",
+//       gender: gender, // Setting the userType to 'company' for company admin
+//       dateOfBirth: dateOfBirth,
+//     });
+
+//     // Save the user to the database
+//     await newUser.save();
+
+//     // Step 4: Generate JWT for the company (optional)
+//     const token = newCompany.getSignedJwtToken(); // Assuming the method exists in company model
+
+//     // Step 5: Return success response with token and company details
+//     res.status(201).json({
+//       message: "Company and user registered successfully",
+//       token,
+//       company: {
+//         companyName: newCompany.companyName,
+//         companyEmail: newCompany.companyEmail,
+//         companyPhoneNo: newCompany.companyPhoneNo,
+//         companyLogoUrl: newCompany.companyLogoUrl,
+//       },
+//       user: {
+//         firstname: newUser.firstname,
+//         lastname: newUser.lastname,
+//         email: newUser.email,
+//         userType: newUser.userType,
+//       },
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res
+//       .status(500)
+//       .json({ message: "Internal Server Error", error: error.message });
+//   }
+// });
+
+router.post("/registerCompany", async (req, res) => {
   try {
     const {
       companyName,
@@ -162,79 +247,65 @@ router.post("/register-company", async (req, res) => {
       companyLogoUrl,
       gender,
       dateOfBirth,
+      establishedIn,
+      supportDoocument,
     } = req.body;
 
-    // Step 1: Check if the company phone number or email already exists
-    const existingCompany = await Company.findOne({
+    // Check if phone or email already exists in Pending or Company
+    const existsInPending = await PendingCompany.findOne({
       $or: [{ companyPhoneNo }, { companyEmail }],
     });
-    if (existingCompany) {
+    const existsInCompany = await Company.findOne({
+      $or: [{ companyPhoneNo }, { companyEmail }],
+    });
+
+    if (existsInPending || existsInCompany) {
       return res.status(400).json({
         message: "Company with this phone number or email already exists",
       });
     }
-
-    // Step 2: Create a new company
-    const newCompany = new Company({
+    const pendingCompany = new PendingCompany({
       companyName,
       companyOwnerFirstName,
       companyOwnerLastName,
       companyPhoneNo,
       companyAddress,
+      establishedIn,
       companyEmail,
       password,
+      companyLogoUrl,
       gender,
       dateOfBirth,
-      companyLogoUrl,
+      supportDoocument,
     });
 
-    // Hash the company password
-    const salt = await genSalt(10);
-    newCompany.password = await hash(password, salt);
+    await pendingCompany.save();
 
-    // Save the company to the database
-    await newCompany.save();
-
-    // Step 3: Create the corresponding user
-    const newUser = new User({
-      _id: newCompany._id, // Set the user _id to be the same as the company _id
-      firstname: companyOwnerFirstName,
-      lastname: companyOwnerLastName,
-      email: companyEmail,
-      password, // The password should already be hashed as we did for the company
-      userType: "company",
-      gender: gender, // Setting the userType to 'company' for company admin
-      dateOfBirth: dateOfBirth,
-    });
-
-    // Save the user to the database
-    await newUser.save();
-
-    // Step 4: Generate JWT for the company (optional)
-    const token = newCompany.getSignedJwtToken(); // Assuming the method exists in company model
-
-    // Step 5: Return success response with token and company details
     res.status(201).json({
-      message: "Company and user registered successfully",
-      token,
-      company: {
-        companyName: newCompany.companyName,
-        companyEmail: newCompany.companyEmail,
-        companyPhoneNo: newCompany.companyPhoneNo,
-        companyLogoUrl: newCompany.companyLogoUrl,
-      },
-      user: {
-        firstname: newUser.firstname,
-        lastname: newUser.lastname,
-        email: newUser.email,
-        userType: newUser.userType,
-      },
+      message: "Company registration submitted and pending approval.",
     });
   } catch (error) {
     console.error(error);
     res
       .status(500)
       .json({ message: "Internal Server Error", error: error.message });
+  }
+});
+
+router.get("/getcompaniesUnApproved", async (req, res) => {
+  try {
+    const pendingCompanies = await PendingCompany.find({ status: "pending" });
+    res.status(200).json({
+      message: "Pending companies fetched successfully",
+      count: pendingCompanies.length,
+      data: pendingCompanies,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 });
 
@@ -409,7 +480,33 @@ router.post("/forgotPassword", async (req, res) => {
   res.json({ message: "OTP sent to email", status: 200 });
 });
 
-//
+router.post("/sendCompanyEmailOtp", async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ message: "Email is required." });
+  }
+  try {
+    const company = await PendingCompany.findOne({ companyEmail: email });
+    if (!company) {
+      return res.status(404).json({ message: "Pending company not found." });
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    company.emailOtp = otp;
+    await company.save();
+    await sendEmail(
+      email,
+      "OnBoarding Email Verification as Tour Operating Company",
+      `${otp}`
+    );
+    res.status(200).json({ message: "OTP sent to email successfully." });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Failed to send OTP", error: error.message });
+  }
+});
+
 router.post("/verifyOTP", async (req, res) => {
   // #swagger.tags = ['Auth']
   const { email, otp } = req.body;
