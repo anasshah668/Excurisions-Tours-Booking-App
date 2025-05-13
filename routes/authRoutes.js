@@ -244,7 +244,7 @@ router.post("/registerCompany", async (req, res) => {
       gender,
       dateOfBirth,
       establishedIn,
-      supportDoocument,
+      supportDocument,
     } = req.body;
 
     // Check if phone or email already exists in Pending or Company
@@ -272,7 +272,7 @@ router.post("/registerCompany", async (req, res) => {
       companyLogoUrl,
       gender,
       dateOfBirth,
-      supportDoocument,
+      supportDocument,
       status: "approved",
     });
 
@@ -352,7 +352,7 @@ router.post("/loginCompany", async (req, res) => {
     // Include the userId in the response
     res.status(200).json({
       token,
-      companyId: company._id,
+      userId: company._id,
       userType: "company",
       email: company.companyEmail,
       profileImage: company.companyLogoUrl,

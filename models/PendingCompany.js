@@ -22,7 +22,7 @@ const pendingcompanySchema = new Schema({
     type: String,
     required: true,
   },
-  supportDoocument: {
+  supportDocument: {
     type: String,
     required: true,
   },
