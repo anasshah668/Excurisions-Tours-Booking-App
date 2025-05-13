@@ -8,12 +8,16 @@ import paymentRoutes from "./routes/stripesRoute.js";
 import uploadRoutes from "./routes/GateWayRoute/uploadRoute.js";
 import openAiRoutes from "./routes/GateWayRoute/openAiRoute.js";
 import productRoutes from "./routes/ProductRoute.js";
+import chatRoutes from "./routes/messageRoute.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import swaggerUi from "swagger-ui-express";
+import { Server } from "socket.io";
+import http from "http";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
+import socketHandler from "./shared/socketHandler.js";
 
 // Load environment variables
 config();
@@ -33,10 +37,16 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
-
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
 app.use(cors());
 app.use(json());
-
+socketHandler(io);
 // Connect to MongoDB
 connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -59,6 +69,8 @@ app.use("/api/payment", paymentRoutes);
 app.use("/api/gateWay", uploadRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/search", faqRoutes);
+app.use("/api/chat", chatRoutes);
+
 app.get("/", (req, res) => {
   res.json({ message: "Server running" });
 });

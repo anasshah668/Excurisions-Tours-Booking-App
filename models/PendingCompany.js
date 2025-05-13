@@ -59,6 +59,10 @@ const pendingcompanySchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  status: {
+    type: String,
+    required: true,
+  },
 });
 
 pendingcompanySchema.pre("save", async function (next) {

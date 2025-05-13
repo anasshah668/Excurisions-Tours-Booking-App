@@ -8,10 +8,6 @@ import { sendEmail } from "../shared/common.js";
 
 import db from "../config/firebaseConfiguration.js";
 const router = Router();
-// Register a new user
-router.post("/", async (req, res) => {
-  const { name, email } = req.body;
-});
 router.post("/register", async (req, res) => {
   // #swagger.tags = ['Auth']
   try {
@@ -277,6 +273,7 @@ router.post("/registerCompany", async (req, res) => {
       gender,
       dateOfBirth,
       supportDoocument,
+      status: "approved",
     });
 
     await pendingCompany.save();
@@ -332,6 +329,33 @@ router.post("/login", async (req, res) => {
       userType: user.userType,
       email: user.email,
       profileImage: user.profileImage,
+      message: "Successfully Login",
+      status: 200,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server error" });
+  }
+});
+router.post("/loginCompany", async (req, res) => {
+  // #swagger.tags = ['Auth']
+  const { email, password } = req.body;
+  try {
+    const company = await PendingCompany.findOne({ email });
+    if (!company) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+    const isMatch = await company.matchPassword(password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+    const token = company.getSignedJwtToken();
+    // Include the userId in the response
+    res.status(200).json({
+      token,
+      companyId: company._id,
+      userType: "company",
+      email: company.companyEmail,
+      profileImage: company.companyLogoUrl,
       message: "Successfully Login",
       status: 200,
     });

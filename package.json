@@ -35,6 +35,7 @@
     "openai": "^4.96.2",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "socket.io": "^4.8.1",
     "stripe": "^18.0.0",
     "stripes": "^0.0.82",
     "swagger-autogen": "^2.23.7",
