@@ -12,7 +12,7 @@ const bookingschema = new Schema({
   },
   userId: {
     type: String,
-    required: true, // Trip title is required but not unique, allowing duplicates for the same company
+    required: true,
   },
   companyId: {
     type: String,
@@ -25,6 +25,28 @@ const bookingschema = new Schema({
     type: String,
     required: true,
   },
+  BillingContact: [
+    {
+      address: String,
+      country: String,
+      province: String,
+      city: String,
+      contactNumber: String,
+      emergencyContactNumber: String,
+      zipCode: String,
+      confirmEmail: String,
+    },
+  ],
+  travelers: [
+    {
+      firstName: String,
+      middleName: String,
+      lastName: String,
+      dob: String,
+      gender: String,
+      phone: String,
+    },
+  ],
   totalBill: {
     type: String,
     required: true,
@@ -33,10 +55,7 @@ const bookingschema = new Schema({
     type: Number,
     required: true,
   },
-  customerName: {
-    type: String,
-    required: true,
-  },
+
   customerAddress: { type: String, required: true },
 });
 

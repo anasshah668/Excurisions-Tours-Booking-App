@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import web_token from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { config } from "dotenv";
+import PendingCompany from "../models/PendingCompany.js";
 
 const { verify } = web_token;
 config();
@@ -20,6 +21,33 @@ export const protect = async (req, res, next) => {
       const decoded = verify(token, process.env.JWT_SECRET);
       // Attach the user to the request object (optional, for future use)
       req.user = await User.findById(decoded.id).select("-password");
+      next();
+    } catch (error) {
+      console.error(error);
+      return res.status(401).json({ message: "Not authorized, token failed" });
+    }
+  }
+
+  if (!token) {
+    return res.status(401).json({ message: "Not authorized, no token" });
+  }
+};
+
+export const protectCompany = async (req, res, next) => {
+  let token;
+  // Check if the authorization header is present and starts with 'Bearer'
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    try {
+      // Extract the token from the header
+      token = req.headers.authorization.split(" ")[1];
+
+      // Verify the token and decode the user ID
+      const decoded = verify(token, process.env.JWT_SECRET);
+      // Attach the user to the request object (optional, for future use)
+      req.user = await PendingCompany.findById(decoded.id).select("-password");
       next();
     } catch (error) {
       console.error(error);

@@ -24,7 +24,7 @@ const tripSchema = new Schema({
   },
   destination: {
     type: String,
-    required: true, // Destination is required but not unique
+    required: true,
   },
   startDate: {
     type: String,
@@ -45,6 +45,34 @@ const tripSchema = new Schema({
   tripImageUrl: {
     type: String,
     required: true,
+  },
+  accommodation: {
+    type: String,
+    required: false,
+  },
+  transport: {
+    type: String,
+    required: false,
+  },
+  itinerary: {
+    type: String,
+    required: false,
+  },
+  features: {
+    type: String,
+    required: false,
+  },
+  meals: {
+    type: String,
+    required: false,
+  },
+  pickup: {
+    type: String,
+    required: false,
+  },
+  dropoff: {
+    type: String,
+    required: false,
   },
   createdAt: {
     type: Date,

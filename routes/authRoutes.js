@@ -4,7 +4,7 @@ import Company from "../models/CompanyModel.js";
 import PendingCompany from "../models/PendingCompany.js";
 import pkg from "bcryptjs";
 const { compare, genSalt, hash } = pkg;
-import { sendEmail } from "../shared/common.js";
+import { sendEmail, protectCompany } from "../shared/common.js";
 
 import db from "../config/firebaseConfiguration.js";
 const router = Router();
@@ -340,7 +340,7 @@ router.post("/loginCompany", async (req, res) => {
   // #swagger.tags = ['Auth']
   const { email, password } = req.body;
   try {
-    const company = await PendingCompany.findOne({ email });
+    const company = await PendingCompany.findOne({ companyEmail: email });
     if (!company) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -490,6 +490,55 @@ router.put("/change-password", async (req, res) => {
   }
 });
 
+router.put("/change-password-company", protectCompany, async (req, res) => {
+  const { userId, oldPassword, newPassword } = req.body;
+
+  if (!userId || !oldPassword || !newPassword) {
+    return res.status(400).json({
+      message: "User ID, old password, and new password are required",
+      status: 400,
+    });
+  }
+
+  try {
+    const user = await PendingCompany.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found", status: 404 });
+    }
+
+    const isMatch = await user.matchPassword(oldPassword);
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Old password doesn't match",
+        status: 400,
+      });
+    }
+
+    const isSamePassword = await user.matchPassword(newPassword);
+    if (isSamePassword) {
+      return res.status(400).json({
+        message: "New password cannot be the same as the old password",
+        status: 400,
+      });
+    }
+
+    // Assign the new password (hook will hash it)
+    user.password = newPassword;
+
+    await user.save(); // triggers pre("save") to hash it
+
+    return res.status(200).json({
+      message: "Password successfully updated",
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Password update failed", error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", status: 500 });
+  }
+});
+
 //forget-password
 router.post("/forgotPassword", async (req, res) => {
   // #swagger.tags = ['Auth']
@@ -559,5 +608,112 @@ router.post("/resetPassword", async (req, res) => {
     res.json({ message: "Email not valid or OTP Expired", status: 200 });
   }
 });
+router.get("/company-details/:id", protectCompany, async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const company = await PendingCompany.findById(id).select(
+      "companyLogoUrl companyCoverPhoto companyBio companyName companyAddress companyPhoneNo companyEmail"
+    );
+
+    if (!company) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Company not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        logoUrl: company.companyLogoUrl,
+        coverPhoto: company.companyCoverPhoto,
+        bio: company.companyBio,
+        companyName: company.companyName,
+        companyEmail: company.companyEmail,
+        companyPhoneNo: company.companyPhoneNo,
+        companyAddress: company.companyAddress,
+        companyBio: company.companyBio,
+      },
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+});
+router.put(
+  "/updateCompanyGeneralInfo/:id",
+  protectCompany,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { companyLogoUrl, companyPhoneNo, companyBio, companyAddress } =
+        req.body;
+      const company = await PendingCompany.findById(id);
+      if (!company) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Company not found" });
+      }
+      // Only update fields if they're provided
+      if (companyLogoUrl) company.companyLogoUrl = companyLogoUrl;
+      if (companyPhoneNo) company.companyPhoneNo = companyPhoneNo;
+      if (companyBio) company.companyBio = companyBio;
+      if (companyAddress) company.companyAddress = companyAddress;
+      company.updatedAt = Date.now();
+      await company.save();
+      res.status(200).json({
+        success: true,
+        message: "Company details updated successfully",
+        data: {
+          logoUrl: company.companyLogoUrl,
+          coverPhoto: company.companyCoverPhoto,
+          bio: company.companyBio,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  }
+);
+router.put("/update-company-details/:id", protectCompany, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { companyLogoUrl, companyCoverPhoto, companyBio } = req.body;
+    const company = await PendingCompany.findById(id);
+
+    if (!company) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Company not found" });
+    }
+
+    // Only update fields if they're provided
+    if (companyLogoUrl) company.companyLogoUrl = companyLogoUrl;
+    if (companyCoverPhoto) company.companyCoverPhoto = companyCoverPhoto;
+    if (companyBio) company.companyBio = companyBio;
+
+    company.updatedAt = Date.now();
+
+    await company.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Company details updated successfully",
+      data: {
+        logoUrl: company.companyLogoUrl,
+        coverPhoto: company.companyCoverPhoto,
+        bio: company.companyBio,
+      },
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
+  }
+});
 export default router;

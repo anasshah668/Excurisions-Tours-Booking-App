@@ -47,6 +47,14 @@ const pendingcompanySchema = new Schema({
     type: String,
     required: true,
   },
+  companyBio: {
+    type: String,
+    required: false,
+  },
+  companyCoverPhoto: {
+    type: String,
+    required: false,
+  },
   emailOtp: {
     type: Number,
     required: false,

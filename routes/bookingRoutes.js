@@ -2,84 +2,63 @@ import express from "express";
 import { protect } from "../shared/common.js";
 import Booking from "../models/BookingModel.js";
 const router = express.Router();
-router.post("/bookTrip", protect, async (req, res) => {
-  // #swagger.tags = ['Booking Routes']
+router.post("/BookTrip", protect, async (req, res) => {
   try {
-    const { bookingid, tripId, userId, companyId, noOfSeats, seatPerSeat } =
-      req.body;
-
-    if (!tripId || !userId || !companyId || !noOfSeats || !seatPerSeat) {
-      return res.status(400).json({ message: "All fields are required." });
-    }
-
-    const seats = parseInt(noOfSeats);
-    const seatPrice = parseFloat(seatPerSeat);
-    const totalBill = seats * seatPrice;
-
-    let booking;
-
-    if (!bookingid || bookingid === "0") {
-      // 🔹 New Booking
-      booking = new Booking({
-        tripId,
-        userId,
-        companyId,
-        noOfSeats: seats,
-        seatPerSeat: seatPrice,
-        totalBill: totalBill.toFixed(2),
-        status: true,
-      });
-
-      await booking.save();
-      res.status(201).json({ message: "New booking created", booking });
-    } else {
-      // 🔹 Update Booking (only if bookingid + userId match)
-      booking = await Booking.findOne({ bookingid, userId });
-
-      if (!booking) {
-        return res.status(404).json({
-          message: "No booking found with given bookingid and userId",
-        });
-      }
-
-      booking.tripId = tripId;
-      booking.companyId = companyId;
-      booking.noOfSeats = seats;
-      booking.seatPerSeat = seatPrice;
-      booking.totalBill = totalBill.toFixed(2);
-
-      await booking.save();
-      res
-        .status(200)
-        .json({ message: "Booking updated successfully", booking });
-    }
+    const { status, ...data } = req.body;
+    const booking = new Booking(data);
+    const saved = await booking.save();
+    res.status(201).json({
+      message: "Booking created successfully",
+      bookingid: saved._id,
+      data: saved,
+    });
   } catch (error) {
-    console.error("Booking error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(400).json({ message: error.message });
   }
 });
 
-router.post("/getBookingsByUser", protect, async (req, res) => {
-  // #swagger.tags = ['Booking Routes']
+// Get all bookings
+router.get("/BookTrip", protect, async (req, res) => {
   try {
-    const { userId } = req.body;
-
-    if (!userId) {
-      return res.status(400).json({ message: "userId is required." });
-    }
-
-    const bookings = await Booking.find({ userId });
-
-    if (!bookings || bookings.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No bookings found for this user." });
-    }
-
-    res.status(200).json({ bookings });
+    const bookings = await Booking.find();
+    res.json(bookings);
   } catch (error) {
-    console.error("Error fetching bookings:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get a booking by ID
+router.get("/BookTrip/:id", protect, async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+    res.json(booking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.patch("/BookTrip/:id/status", protect, async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    booking.status = req.body.status;
+    const updated = await booking.save();
+    res.json(updated);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// Delete a booking
+router.delete("/BookTrip/:id", protect, async (req, res) => {
+  try {
+    const deleted = await Booking.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: "Booking not found" });
+    res.json({ message: "Booking deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
