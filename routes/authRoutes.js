@@ -680,7 +680,7 @@ router.put(
     }
   }
 );
-router.put("/update-company-details/:id", protectCompany, async (req, res) => {
+router.put("/update-company-details/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { companyLogoUrl, companyCoverPhoto, companyBio } = req.body;
