@@ -71,6 +71,21 @@ const pendingcompanySchema = new Schema({
     type: String,
     required: true,
   },
+  ratings: [
+  {
+    userId: { type: Schema.Types.ObjectId, ref: "User" },
+    firstname:{type:String},
+    lastname:{type:String}, // or any model you use
+    stars: { type: Number, required: true, min: 1, max: 5 },
+    ratedAt: { type: Date, default: Date.now },
+    message:{type: String }
+  },
+],
+averageRating: {
+  type: Number,
+  default: 0,
+},
+  
 });
 
 pendingcompanySchema.pre("save", async function (next) {

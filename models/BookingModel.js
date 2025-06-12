@@ -1,14 +1,13 @@
 import { Schema, model, mongoose } from "mongoose";
-
 const bookingschema = new Schema({
   bookingid: {
     type: Schema.Types.ObjectId,
     default: () => new mongoose.Types.ObjectId(),
-    unique: true, // bookingId
+    unique: true, 
   },
   tripId: {
-    type: String, // Store tripid as a string (or ObjectId)
-    required: true, // CompanyId is required but not unique (can have multiple trips from the same company)
+    type: String,
+    required: true,
   },
   userId: {
     type: String,
@@ -47,6 +46,16 @@ const bookingschema = new Schema({
       phone: String,
     },
   ],
+  tripInfo: {
+        tripTitle: String,
+        destination: String,
+        startDate: String,
+        endDate: String,
+        pricePerSeat: String,
+        companyName: String,
+        description: String,
+        tripImageUrl: String
+      },
   totalBill: {
     type: String,
     required: true,
@@ -55,11 +64,6 @@ const bookingschema = new Schema({
     type: Number,
     required: true,
   },
-
   customerAddress: { type: String, required: true },
 });
-
-// Sync indexes to ensure no old unique constraints are in place
-
-// Create and export the Trip model
 export default model("Booking", bookingschema);

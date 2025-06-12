@@ -613,7 +613,7 @@ router.get("/company-details/:id", protectCompany, async (req, res) => {
     const { id } = req.params;
 
     const company = await PendingCompany.findById(id).select(
-      "companyLogoUrl companyCoverPhoto companyBio companyName companyAddress companyPhoneNo companyEmail"
+      "companyLogoUrl companyCoverPhoto companyBio companyName companyAddress companyPhoneNo companyEmail averageRating ratings"
     );
 
     if (!company) {
@@ -633,6 +633,9 @@ router.get("/company-details/:id", protectCompany, async (req, res) => {
         companyPhoneNo: company.companyPhoneNo,
         companyAddress: company.companyAddress,
         companyBio: company.companyBio,
+        averageRating:company.averageRating,
+        ratings:company.ratings
+
       },
     });
   } catch (error) {
@@ -714,6 +717,44 @@ router.put("/update-company-details/:id", async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Server error", error: error.message });
+  }
+});
+
+router.post("/rate", async (req, res) => {
+  try {
+    const { companyId, userId, stars, message } = req.body;
+    if (!companyId || !userId || !stars || stars < 1 || stars > 5) {
+      return res.status(400).json({ message: "Invalid input data." });
+    }
+    const company = await PendingCompany.findById({_id:companyId});
+    const user = await User.findById({_id : userId})
+    if (!company) {
+      return res.status(404).json({ message: "Company not found." });
+    }
+    const existingIndex = company.ratings.findIndex(
+      (r) => r.userId.toString() === userId
+    );
+    if (existingIndex !== -1) {
+      company.ratings[existingIndex].stars = stars;
+      company.ratings[existingIndex].ratedAt = new Date();
+      company.ratings[existingIndex].message = message
+      company.ratings[existingIndex].firstname = user.firstname
+       company.ratings[existingIndex].lastname = user.lastname
+    } else {
+      company.ratings.push({ userId, stars, ratedAt: new Date() , message ,firstname:user.firstname,lastname:user.lastname});
+    }
+    const totalStars = company.ratings.reduce((sum, r) => sum + r.stars, 0);
+    const avg = totalStars / company.ratings.length;
+    company.averageRating = avg.toFixed(1);
+    await company.save();
+    res.status(200).json({
+      message: "Rating submitted successfully.",
+      averageRating: company.averageRating,
+      totalRatings: company.ratings.length,
+    });
+  } catch (err) {
+    console.error("Rating error:", err);
+    res.status(500).json({ message: "Server error." });
   }
 });
 export default router;

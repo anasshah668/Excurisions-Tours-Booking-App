@@ -3,6 +3,7 @@ import User from "../models/userModel.js"
 import  PendingCompany  from "../models/PendingCompany.js";
 import { Router } from "express";
 import  Notification  from "../models/NotificationModel.js"
+import Notes from "../models/NotesModel.js"; 
 const router = Router();
 router.get("/:roomId", async (req, res) => {
   const { roomId } = req.params;
@@ -158,5 +159,98 @@ router.get("/contacts/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+router.post("/upsertNote", async (req, res) => {
+  const { noteId, companyId, noteText } = req.body;
+
+  if (!companyId || !noteText) {
+    return res.status(400).json({ error: "companyId and noteText are required" });
+  }
+
+  try {
+    // Case 1: New note (noteId = 0 or null)
+    if (!noteId || noteId === "0") {
+      const existing = await Notes.findOne({ companyId });
+
+      if (existing) {
+        // Append new note to existing notes
+        existing.notes.push(noteText);
+        await existing.save();
+        return res.status(200).json({ message: "Note added to existing company", data: existing });
+      } else {
+        // Create a new note document
+        const newNote = new Notes({
+          notes: [noteText],
+          companyId
+        });
+        await newNote.save();
+        return res.status(201).json({ message: "New note document created", data: newNote });
+      }
+    }
+
+    // Case 2: Update existing note by noteId
+    const noteDoc = await Notes.findOne({ noteId });
+    if (!noteDoc) {
+      return res.status(404).json({ error: "Note document not found for given noteId" });
+    }
+
+    // Let's say you want to replace the last note or the first one — update logic can vary
+    noteDoc.notes[noteDoc.notes.length - 1] = noteText;
+    await noteDoc.save();
+    return res.status(200).json({ message: "Note updated", data: noteDoc });
+
+  } catch (err) {
+    console.error("Error handling notes:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/getNotesByCompanyId/:companyId", async (req, res) => {
+
+  const { companyId } = req.params;
+
+  if (!companyId) {
+    return res.status(400).json({ error: "companyId is required" });
+  }
+
+  try {
+    const noteDoc = await Notes.findOne({ companyId });
+
+    if (!noteDoc) {
+      return res.status(404).json({ message: "No notes found for this company" });
+    }
+
+    return res.status(200).json({ data: noteDoc });
+  } catch (err) {
+    console.error("Error fetching notes:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/deleteNote", async (req, res) => {
+  const { companyId, noteText } = req.body;
+
+  if (!companyId || !noteText) {
+    return res.status(400).json({ error: "companyId and noteText are required" });
+  }
+
+  try {
+    const noteDoc = await Notes.findOne({ companyId });
+
+    if (!noteDoc) {
+      return res.status(404).json({ error: "Notes not found for this company" });
+    }
+
+    // Remove the specific note
+    noteDoc.notes = noteDoc.notes.filter(note => note !== noteText);
+    await noteDoc.save();
+
+    return res.status(200).json({ message: "Note deleted", data: noteDoc });
+  } catch (err) {
+    console.error("Error deleting note:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 export default router;

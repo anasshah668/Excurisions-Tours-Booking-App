@@ -35,7 +35,7 @@ const tripSchema = new Schema({
     required: true,
   },
   pricePerSeat: {
-    type: String,
+    type: Number,
     required: true,
   },
   availableSeats: {

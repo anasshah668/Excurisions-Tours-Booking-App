@@ -8,6 +8,7 @@ import paymentRoutes from "./routes/stripesRoute.js";
 import uploadRoutes from "./routes/GateWayRoute/uploadRoute.js";
 import openAiRoutes from "./routes/GateWayRoute/openAiRoute.js";
 import productRoutes from "./routes/ProductRoute.js";
+import customTripRoutes from "./routes/customTripRoute.js"
 import chatRoutes from "./routes/messageRoute.js";
 import faqRoutes from "./routes/faqRoutes.js";
 import swaggerUi from "swagger-ui-express";
@@ -70,6 +71,7 @@ app.use("/api/gateWay", uploadRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/search", faqRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/custom",customTripRoutes)
 
 app.get("/", (req, res) => {
   res.json({ message: "Server running" });

@@ -213,8 +213,6 @@ router.get("/tripById/:tripId", protectCompany, async (req, res) => {
       .json({ success: false, message: "Server Error", error: error.message });
   }
 });
-
-
 router.get("/monthly-count", protectCompany, async (req, res) => {
   try {
     const monthlyData = await Trip.aggregate([
@@ -271,4 +269,55 @@ router.get("/monthly-count", protectCompany, async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 });
+
+
+router.get("/topDealsTrips", async (req, res) => {
+  try {
+    let { minPrice, maxPrice, sort, query } = req.query;
+
+    // Parse query values safely
+    minPrice = minPrice !== undefined && minPrice !== "null" ? Number(minPrice) : null;
+    maxPrice = maxPrice !== undefined && maxPrice !== "null" ? Number(maxPrice) : null;
+
+    const filter = {};
+
+    // Handle price filter
+    if (minPrice !== null && maxPrice !== null && minPrice === maxPrice) {
+      // Exact price match
+      filter.pricePerSeat = minPrice;
+    } else if (minPrice !== null || maxPrice !== null) {
+      filter.pricePerSeat = {};
+      if (minPrice !== null) filter.pricePerSeat.$gte = minPrice;
+      if (maxPrice !== null) filter.pricePerSeat.$lte = maxPrice;
+    }
+
+    // Handle search
+    if (query && query.trim() !== "") {
+      filter.tripTitle = { $regex: query, $options: "i" };
+    }
+
+    // Handle sorting
+    let sortOption = {};
+    switch (sort) {
+      case "price-low":
+        sortOption.pricePerSeat = 1; // ascending (min to max)
+        break;
+      case "price-high":
+        sortOption.pricePerSeat = -1; // descending
+        break;
+      case "featured":
+      default:
+        sortOption.createdAt = -1;
+        break;
+    }
+
+    const trips = await Trip.find(filter).sort(sortOption);
+
+    res.status(200).json({ success: true, trips });
+  } catch (error) {
+    console.error("Error fetching trips:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+});
+
 export default router;
