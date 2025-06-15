@@ -126,33 +126,31 @@ router.post("/get-trips", protect, async (req, res) => {
   }
 });
 router.post("/getUnAuthTrips", async (req, res) => {
-  // #swagger.tags = ['Trip Routes']
   try {
-    const { query } = req.body;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize to start of day
 
-    const filter = query
-      ? {
-          $or: [
-            { tripTitle: { $regex: query, $options: "i" } },
-            { destination: { $regex: query, $options: "i" } },
-          ],
-        }
-      : {}; // Empty filter returns all documents
+    const allTrips = await Trip.find();
 
-    const trips = await Trip.find(filter);
+    // Filter trips whose startDate string is in the future
+    const upcomingTrips = allTrips.filter(trip => {
+      const tripDate = new Date(trip.startDate);
+      return tripDate >= today;
+    });
+
+    // Optional: sort by startDate ascending
+    upcomingTrips.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
 
     res.status(200).json({
-      message: "Trips fetched successfully",
-      trips,
-      status: 200,
+      success: true,
+      trips: upcomingTrips,
     });
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    console.error("Error fetching upcoming trips:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 });
+
 router.post("/RecentPostedTrips", async (req, res) => {
   const { companyId, count } = req.body;
   try {
@@ -271,19 +269,67 @@ router.get("/monthly-count", protectCompany, async (req, res) => {
 });
 
 
+// router.get("/topDealsTrips", async (req, res) => {
+//   try {
+//     let { minPrice, maxPrice, sort, query } = req.query;
+
+//     // Parse query values safely
+//     minPrice = minPrice !== undefined && minPrice !== "null" ? Number(minPrice) : null;
+//     maxPrice = maxPrice !== undefined && maxPrice !== "null" ? Number(maxPrice) : null;
+
+//     const filter = {};
+
+//     // Handle price filter
+//     if (minPrice !== null && maxPrice !== null && minPrice === maxPrice) {
+//       // Exact price match
+//       filter.pricePerSeat = minPrice;
+//     } else if (minPrice !== null || maxPrice !== null) {
+//       filter.pricePerSeat = {};
+//       if (minPrice !== null) filter.pricePerSeat.$gte = minPrice;
+//       if (maxPrice !== null) filter.pricePerSeat.$lte = maxPrice;
+//     }
+
+//     // Handle search
+//     if (query && query.trim() !== "") {
+//       filter.tripTitle = { $regex: query, $options: "i" };
+//     }
+
+//     // Handle sorting
+//     let sortOption = {};
+//     switch (sort) {
+//       case "price-low":
+//         sortOption.pricePerSeat = 1; // ascending (min to max)
+//         break;
+//       case "price-high":
+//         sortOption.pricePerSeat = -1; // descending
+//         break;
+//       case "featured":
+//       default:
+//         sortOption.createdAt = -1;
+//         break;
+//     }
+
+//     const trips = await Trip.find(filter).sort(sortOption);
+
+//     res.status(200).json({ success: true, trips });
+//   } catch (error) {
+//     console.error("Error fetching trips:", error);
+//     res.status(500).json({ success: false, message: "Server Error" });
+//   }
+// });
+
 router.get("/topDealsTrips", async (req, res) => {
   try {
     let { minPrice, maxPrice, sort, query } = req.query;
 
-    // Parse query values safely
+    // Safely parse query values
     minPrice = minPrice !== undefined && minPrice !== "null" ? Number(minPrice) : null;
     maxPrice = maxPrice !== undefined && maxPrice !== "null" ? Number(maxPrice) : null;
 
     const filter = {};
 
-    // Handle price filter
+    // Price filtering
     if (minPrice !== null && maxPrice !== null && minPrice === maxPrice) {
-      // Exact price match
       filter.pricePerSeat = minPrice;
     } else if (minPrice !== null || maxPrice !== null) {
       filter.pricePerSeat = {};
@@ -291,27 +337,36 @@ router.get("/topDealsTrips", async (req, res) => {
       if (maxPrice !== null) filter.pricePerSeat.$lte = maxPrice;
     }
 
-    // Handle search
+    // Search query filtering
     if (query && query.trim() !== "") {
       filter.tripTitle = { $regex: query, $options: "i" };
     }
 
-    // Handle sorting
-    let sortOption = {};
+    // Base query
+    let trips = await Trip.find(filter);
+
+    // Filter out past trips
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    trips = trips.filter(trip => {
+      const tripDate = new Date(trip.startDate);
+      return tripDate >= today;
+    });
+
+    // Sorting logic
     switch (sort) {
       case "price-low":
-        sortOption.pricePerSeat = 1; // ascending (min to max)
+        trips.sort((a, b) => a.pricePerSeat - b.pricePerSeat);
         break;
       case "price-high":
-        sortOption.pricePerSeat = -1; // descending
+        trips.sort((a, b) => b.pricePerSeat - a.pricePerSeat);
         break;
       case "featured":
       default:
-        sortOption.createdAt = -1;
+        trips.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
     }
-
-    const trips = await Trip.find(filter).sort(sortOption);
 
     res.status(200).json({ success: true, trips });
   } catch (error) {

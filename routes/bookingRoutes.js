@@ -2,22 +2,40 @@ import express from "express";
 import { protect } from "../shared/common.js";
 import Booking from "../models/BookingModel.js";
 import Trip from "../models/TripModel.js"
+import Notification from "../models/NotificationModel.js";
+import User from "../models/userModel.js";
 const router = express.Router();
 import ExcelJS from "exceljs";
 router.post("/BookTrip", protect, async (req, res) => {
   try {
-    const { tripId, ...data } = req.body;
+    const { tripId,userId, ...data } = req.body;
+
     const trip = await Trip.findById(tripId);
+    const user = await User.findById(userId)
     if (!trip) {
       return res.status(404).json({ message: "Trip not found" });
     }
+
     const booking = new Booking({
       ...data,
       tripId,
       tripInfo: trip,
-      userId: req.user._id, 
+      userId: userId,
     });
+
     const savedBooking = await booking.save();
+    const notification = new Notification({
+      userId: trip.companyId,
+      message: `New booking received for: ${trip.tripTitle}`,
+      link: `/trip-bookings`, 
+      type: "booking",
+      senderId: user._id,
+      senderName: user.firstname,
+    });
+
+    // Save notification
+    await notification.save();
+
     res.status(201).json({
       message: "Booking created successfully",
       bookingId: savedBooking._id,
@@ -27,27 +45,6 @@ router.post("/BookTrip", protect, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-
-// router.get("/BookTrip/:userId", protect, async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-
-//     if (!userId) {
-//       return res.status(400).json({ message: "User ID is required" });
-//     }
-
-//     const bookings = await Booking.find({ userId });
-
-//     if (!bookings.length) {
-//       return res.status(404).json({ message: "No bookings found" });
-//     }
-
-//     res.json({ success: true, bookings });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
 router.get("/BookTrip/:userId", protect, async (req, res) => {
   try {
     const { userId } = req.params;
@@ -126,13 +123,10 @@ router.get("/bookings/company/:companyId", async (req, res) => {
     if (!companyId) {
       return res.status(400).json({ success: false, message: "Company ID is required" });
     }
-
-    const bookings = await Booking.find({ companyId });
-
+    const bookings = await Booking.find({ companyId }).sort({ createdAt: -1 });
     if (!bookings.length) {
       return res.status(404).json({ success: false, message: "No bookings found for this company" });
     }
-
     res.status(200).json({ success: true, bookings });
   } catch (error) {
     console.error("Error fetching bookings:", error);

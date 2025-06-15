@@ -7,7 +7,6 @@ const notificationSchema = new Schema(
     link: { type: String }, 
     isRead: { type: Boolean, default: false },
     type: { type: String, default: "chat" },
-
     senderId: { type: mongoose.Schema.Types.ObjectId, required: true }, 
     senderName: { type: String },
   },

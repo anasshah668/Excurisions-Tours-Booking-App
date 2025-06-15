@@ -19,6 +19,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import socketHandler from "./shared/socketHandler.js";
+import customBidRoute from "./routes/customBidRoute.js";
 
 // Load environment variables
 config();
@@ -72,6 +73,7 @@ app.use("/api/product", productRoutes);
 app.use("/api/search", faqRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/custom",customTripRoutes)
+app.use("/api/custom/Bid",customBidRoute )
 
 app.get("/", (req, res) => {
   res.json({ message: "Server running" });

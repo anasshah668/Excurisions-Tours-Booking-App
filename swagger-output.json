@@ -890,24 +890,7 @@
     },
     "/api/trips/getUnAuthTrips": {
       "post": {
-        "tags": [
-          "Trip Routes"
-        ],
         "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "query": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -1089,6 +1072,9 @@
               "type": "object",
               "properties": {
                 "tripId": {
+                  "example": "any"
+                },
+                "userId": {
                   "example": "any"
                 },
                 "data": {
@@ -1804,6 +1790,84 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/custom/customTripForUsers/{userId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/custom/Bid/placeBid": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "example": "any"
+                },
+                "companyId": {
+                  "example": "any"
+                },
+                "customTripId": {
+                  "example": "any"
+                },
+                "amount": {
+                  "example": "any"
+                },
+                "companyName": {
+                  "example": "any"
+                },
+                "customTripName": {
+                  "example": "any"
+                },
+                "startDate": {
+                  "example": "any"
+                },
+                "endDate": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "409": {
+            "description": "Conflict"
           },
           "500": {
             "description": "Internal Server Error"

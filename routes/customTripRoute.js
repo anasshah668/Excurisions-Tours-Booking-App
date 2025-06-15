@@ -75,4 +75,20 @@ router.get("/getCustomTrips/:tripId", async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+
+router.get("/customTripForUsers/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const trips = await CustomTripModel.find({ userId }).sort({ submittedAt: -1 });
+
+    if (!trips || trips.length === 0) {
+      return res.status(404).json({ message: "No trips found for this user." });
+    }
+    res.status(200).json({ success: true, data: trips });
+  } catch (error) {
+    console.error("Error fetching user trips:", error);
+    res.status(500).json({ message: "Server error fetching user trips", error: error.message });
+  }
+});
 export default router;

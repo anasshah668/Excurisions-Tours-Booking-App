@@ -65,5 +65,5 @@ const bookingschema = new Schema({
     required: true,
   },
   customerAddress: { type: String, required: true },
-});
+},{ timestamps: true });
 export default model("Booking", bookingschema);
