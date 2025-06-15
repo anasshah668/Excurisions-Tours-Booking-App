@@ -100,24 +100,24 @@ router.get("/faq", async (req, res) => {
 
 
 
-const upload = multer({
-  dest: "uploads/", // Temporary folder for uploads
-});
+// const upload = multer({
+//   dest: "uploads/", // Temporary folder for uploads
+// });
 
 // Upload route
-router.post("/upload-faq", upload.single("file"), async (req, res) => {
-  try {
-    const filePath = req.file.path;
-    const rawData = fs.readFileSync(filePath);
-    const faqData = JSON.parse(rawData);
+// router.post("/upload-faq", upload.single("file"), async (req, res) => {
+//   try {
+//     const filePath = req.file.path;
+//     const rawData = fs.readFileSync(filePath);
+//     const faqData = JSON.parse(rawData);
 
-    await Faq.insertMany(faqData);
+//     await Faq.insertMany(faqData);
 
-    res.status(200).json({ message: "FAQ uploaded successfully" });
-  } catch (error) {
-    console.error("Upload FAQ Error:", error);
-    res.status(500).json({ message: "Failed to upload FAQ", error: error.message });
-  }
-});
+//     res.status(200).json({ message: "FAQ uploaded successfully" });
+//   } catch (error) {
+//     console.error("Upload FAQ Error:", error);
+//     res.status(500).json({ message: "Failed to upload FAQ", error: error.message });
+//   }
+// });
 
 export default router;
