@@ -12,7 +12,8 @@ router.post("/placeBid", async (req, res) => {
       companyName,
       customTripName,
       startDate,
-      endDate
+      endDate,
+      companyPhoneNo
     } = req.body;
     if (
       !userId ||
@@ -43,7 +44,7 @@ router.post("/placeBid", async (req, res) => {
       endDate
     });
     await newBid.save();
-    const message = `${companyName} has bid $${amount} on your trip "${customTripName}".`;
+    const message = `${companyName} has bid $${amount} on your trip "${customTripName} phone ${companyPhoneNo}.`;
     await Notification.findOneAndUpdate(
       {
         userId,
