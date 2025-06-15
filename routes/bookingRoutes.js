@@ -6,34 +6,87 @@ import Notification from "../models/NotificationModel.js";
 import User from "../models/userModel.js";
 const router = express.Router();
 import ExcelJS from "exceljs";
+// router.post("/BookTrip", protect, async (req, res) => {
+//   try {
+//     const { tripId,userId, ...data } = req.body;
+
+//     const trip = await Trip.findById(tripId);
+//     const user = await User.findById(userId)
+//     if (!trip) {
+//       return res.status(404).json({ message: "Trip not found" });
+//     }
+
+//     const booking = new Booking({
+//       ...data,
+//       tripId,
+//       tripInfo: trip,
+//       userId: userId,
+//     });
+
+//     const savedBooking = await booking.save();
+//     const notification = new Notification({
+//       userId: trip.companyId,
+//       message: `New booking received for: ${trip.tripTitle}`,
+//       link: `/trip-bookings`, 
+//       type: "booking",
+//       senderId: user._id,
+//       senderName: user.firstname,
+//     });
+
+//     // Save notification
+//     await notification.save();
+
+//     res.status(201).json({
+//       message: "Booking created successfully",
+//       bookingId: savedBooking._id,
+//       data: savedBooking,
+//     });
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// });
+
 router.post("/BookTrip", protect, async (req, res) => {
   try {
-    const { tripId,userId, ...data } = req.body;
+    const { tripId, userId, noOfSeats, ...data } = req.body;
 
     const trip = await Trip.findById(tripId);
-    const user = await User.findById(userId)
+    const user = await User.findById(userId);
+
     if (!trip) {
       return res.status(404).json({ message: "Trip not found" });
     }
 
+    // Check if enough seats are available
+    if (trip.availableSeats < noOfSeats) {
+      return res.status(400).json({ message: "Not enough seats available" });
+    }
+
+    // Proceed with booking
     const booking = new Booking({
       ...data,
       tripId,
       tripInfo: trip,
       userId: userId,
+      noOfSeats,
     });
 
     const savedBooking = await booking.save();
+
+    // Deduct seats from the trip
+    trip.availableSeats -= noOfSeats;
+    await trip.save();
+
+    // Create a notification
     const notification = new Notification({
       userId: trip.companyId,
       message: `New booking received for: ${trip.tripTitle}`,
-      link: `/trip-bookings`, 
+      link: `/trip-bookings`,
       type: "booking",
       senderId: user._id,
       senderName: user.firstname,
     });
 
-    // Save notification
     await notification.save();
 
     res.status(201).json({
@@ -42,9 +95,11 @@ router.post("/BookTrip", protect, async (req, res) => {
       data: savedBooking,
     });
   } catch (error) {
+    console.error("Booking error:", error);
     res.status(400).json({ message: error.message });
   }
 });
+
 router.get("/BookTrip/:userId", protect, async (req, res) => {
   try {
     const { userId } = req.params;
