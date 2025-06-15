@@ -44,12 +44,12 @@ router.post("/placeBid", async (req, res) => {
       endDate
     });
     await newBid.save();
-    const message = `${companyName} has bid $${amount} on your trip "${customTripName} phone ${companyPhoneNo}.`;
+    const message = `${companyName} has bid ${amount} on your trip "${customTripName} phone ${companyPhoneNo}.`;
     await Notification.findOneAndUpdate(
       {
         userId,
         senderId: companyId,
-        link: `/custom-trip/${customTripId}`,
+        link: `/custom-trip-request-user/${customTripId}`,
         type: "bid",
       },
       {

@@ -5,6 +5,11 @@ import fs from "fs";
 import Fuse from "fuse.js";
 const router = express.Router();
 const tokenizer = new natural.WordTokenizer();
+
+
+import multer from "multer";
+import path from "path";
+
 // Get a specific FAQ based on the user question
 const stopWords = [
   "the",
@@ -92,7 +97,15 @@ router.get("/faq", async (req, res) => {
     res.status(500).json({ message: "Error processing your question" });
   }
 });
-router.post("/upload-faq", async (req, res) => {
+
+
+
+const upload = multer({
+  dest: "uploads/", // Temporary folder for uploads
+});
+
+// Upload route
+router.post("/upload-faq", upload.single("file"), async (req, res) => {
   try {
     const filePath = req.file.path;
     const rawData = fs.readFileSync(filePath);
@@ -102,10 +115,8 @@ router.post("/upload-faq", async (req, res) => {
 
     res.status(200).json({ message: "FAQ uploaded successfully" });
   } catch (error) {
-    console.error("Upload FAQ Error:", error); // <-- log it
-    res
-      .status(500)
-      .json({ message: "Failed to upload FAQ", error: error.message });
+    console.error("Upload FAQ Error:", error);
+    res.status(500).json({ message: "Failed to upload FAQ", error: error.message });
   }
 });
 

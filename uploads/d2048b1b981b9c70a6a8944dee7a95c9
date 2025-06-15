@@ -1,0 +1,201 @@
+[
+  {
+    "question": "How do I sign up as a traveler?",
+    "answer": "Click 'Register' and select 'Traveler'. Fill in your basic details and verify your email or phone."
+  },
+  {
+    "question": "What information is needed to register as a tour operator?",
+    "answer": "You\u2019ll need your company name, established date, contact info, and optionally upload a portfolio."
+  },
+  {
+    "question": "Is there an approval process for tour operators?",
+    "answer": "Yes, admins review each application and verify authenticity before approval."
+  },
+  {
+    "question": "Can I use my Google account to register?",
+    "answer": "Yes, both travelers and tour operators can register using their Google account."
+  },
+  {
+    "question": "What happens after I submit my registration form?",
+    "answer": "You\u2019ll receive a confirmation email and will be redirected to your dashboard upon approval."
+  },
+  {
+    "question": "How can I find tours that suit my interests?",
+    "answer": "Use the search bar and apply filters such as destination, price, date, and duration."
+  },
+  {
+    "question": "Do I need an account to book a tour?",
+    "answer": "Yes, you must be logged in as a traveler to book a trip."
+  },
+  {
+    "question": "Can I book a trip for someone else?",
+    "answer": "Yes, during checkout, you can enter guest traveler information."
+  },
+  {
+    "question": "How is the total price calculated?",
+    "answer": "It includes base cost, number of travelers, optional add-ons, and taxes (if any)."
+  },
+  {
+    "question": "What payment options are available?",
+    "answer": "Stripe, debit/credit cards, and local options like JazzCash and Easypaisa (if integrated)."
+  },
+  {
+    "question": "Where can I see my upcoming trips?",
+    "answer": "Go to your dashboard and click on \u201cUpcoming Trips\u201d."
+  },
+  {
+    "question": "How do I cancel a trip?",
+    "answer": "Open the trip details and click on \u201cCancel Trip\u201d. Confirm the cancellation within the allowed window."
+  },
+  {
+    "question": "Will I get a refund if I cancel my trip?",
+    "answer": "Refund policies vary per operator. Generally, you must cancel 24 hours in advance for eligibility."
+  },
+  {
+    "question": "Can I change the travel date after booking?",
+    "answer": "That depends on the operator. Use the chat option on the trip page to make requests."
+  },
+  {
+    "question": "Can I download an invoice?",
+    "answer": "Yes, invoices are available on your trip details page under 'Payments'."
+  },
+  {
+    "question": "How can I contact the tour operator before booking?",
+    "answer": "Use the \u201cChat with Operator\u201d button on the tour details page."
+  },
+  {
+    "question": "Can I ask for customizations in the trip plan?",
+    "answer": "Yes, many operators allow custom requests through the chat or custom trip request feature."
+  },
+  {
+    "question": "How will I receive updates about my booking?",
+    "answer": "Notifications are sent via email and app alerts."
+  },
+  {
+    "question": "What should I do if an operator doesn\u2019t respond?",
+    "answer": "Contact platform support if there\u2019s no reply within 24 hours."
+  },
+  {
+    "question": "Can I chat with an operator after booking?",
+    "answer": "Yes, chat remains active for booked trips until the tour ends."
+  },  {
+    "question": "What is included in the trip package?",
+    "answer": "Each trip package includes transportation, accommodation, meals, and guided tours as mentioned in the trip details."
+  },
+  {
+    "question": "Can I customize my trip?",
+    "answer": "Yes, some operators allow customizations. Please contact the operator through their profile or trip page."
+  },
+  {
+    "question": "Are meals included in the trip?",
+    "answer": "Meal inclusion depends on the trip. Check the trip details section for meal information."
+  },
+  {
+    "question": "How do I book a trip?",
+    "answer": "Go to the 'All Trips' page, select your desired trip, click 'Book Now' and follow the checkout process."
+  },
+  {
+    "question": "Can I cancel a trip after booking?",
+    "answer": "Yes, cancellations are allowed up to 24 hours before the trip starts. Visit your dashboard to cancel."
+  },
+  {
+    "question": "What happens after I book a trip?",
+    "answer": "You’ll receive a confirmation email and your booking will be visible in your dashboard under 'My Bookings'."
+  },
+  {
+    "question": "Is my payment secure?",
+    "answer": "Yes, we use secure and encrypted payment gateways to ensure the safety of your transactions."
+  },
+  {
+    "question": "Can I pay in cash on arrival?",
+    "answer": "Some trips may offer cash-on-arrival. Please refer to the trip details or contact the operator directly."
+  },
+  {
+    "question": "What if a trip gets cancelled?",
+    "answer": "If a trip is cancelled by the operator, you will be notified and refunded based on the cancellation policy."
+  },
+  {
+    "question": "Are group discounts available?",
+    "answer": "Some operators offer group discounts. Contact them through the trip page for special rates."
+  },
+  {
+    "question": "How do I know the trip is legitimate?",
+    "answer": "All operators are verified before listing. You can check reviews and ratings on their profiles."
+  },
+  {
+    "question": "How do I leave a review?",
+    "answer": "After completing a trip, go to 'My Trips' and click 'Leave a Review' next to the trip."
+  },
+  {
+    "question": "Can I see photos from past trips?",
+    "answer": "Yes, each trip page includes a gallery of photos shared by the operator and previous travelers."
+  },
+  {
+    "question": "Can I bring children on trips?",
+    "answer": "Most trips allow children. Check the trip description or contact the operator for age policies."
+  },
+  {
+    "question": "Is there travel insurance provided?",
+    "answer": "Travel insurance is not included by default. You may purchase it separately through a third-party provider."
+  },
+  {
+    "question": "How do I contact the tour operator?",
+    "answer": "Use the 'Contact Operator' button on the trip page or visit their profile to message them."
+  },
+  {
+    "question": "Can I see the itinerary before booking?",
+    "answer": "Yes, detailed itineraries are available on each trip page under the 'Itinerary' tab."
+  },
+  {
+    "question": "What should I pack for a trip?",
+    "answer": "Refer to the trip description or contact the operator for recommended packing lists."
+  },
+  {
+    "question": "Do trips have age restrictions?",
+    "answer": "Some trips may have minimum or maximum age limits. Check the trip details for more information."
+  },
+  {
+    "question": "What types of accommodation are provided?",
+    "answer": "Trip pages list the accommodation types, ranging from hotels to camps depending on the tour."
+  },
+  {
+    "question": "How do I change my trip details after booking?",
+    "answer": "You can request changes by contacting the operator through your dashboard."
+  },
+  {
+    "question": "What if I miss my trip?",
+    "answer": "No-shows are generally non-refundable. Contact the operator for help if possible."
+  },
+  {
+    "question": "How far in advance should I book a trip?",
+    "answer": "Popular trips can fill quickly, so it’s best to book at least 2–3 weeks in advance."
+  },
+  {
+    "question": "Can I share a trip with friends?",
+    "answer": "Yes, each trip page has a 'Share' button to send the trip details via social or email."
+  },
+  {
+    "question": "How do I know the trip has available seats?",
+    "answer": "Available seats are shown on the trip page and updated in real-time after each booking."
+  },
+  {
+    "question": "Are trips available all year round?",
+    "answer": "Some trips are seasonal. Check the trip schedule or availability calendar on the trip page."
+  },
+  {
+    "question": "Do I need a visa or permit?",
+    "answer": "For international or restricted destinations, a visa or permit may be needed. The operator will mention it."
+  },
+  {
+    "question": "How are trips rated?",
+    "answer": "Trips are rated based on verified user reviews and overall feedback."
+  },
+  {
+    "question": "Can I request a private trip?",
+    "answer": "Yes, some operators offer private or custom group tours. Contact them for arrangements."
+  },
+  {
+    "question": "Where can I find my booking details?",
+    "answer": "All your bookings are listed in your dashboard under 'My Trips'."
+  }
+]
