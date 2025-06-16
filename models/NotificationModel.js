@@ -15,7 +15,7 @@ const notificationSchema = new Schema(
   }
 );
 
-notificationSchema.index({ userId: 1, senderId: 1, link: 1, type: 1 }, { unique: true });
+// Removed unique index to allow multiple notifications of same type
+// notificationSchema.index({ userId: 1, senderId: 1, link: 1, type: 1 }, { unique: true });
 
 export default model("Notification", notificationSchema);
-

@@ -92,11 +92,6 @@ router.get("/getNotification/:userId", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch notifications" });
   }
 });
-
-
-
-
-
 router.get("/contacts/:id", async (req, res) => {
   const { id: userId } = req.params;
 

@@ -1494,19 +1494,6 @@
         }
       }
     },
-    "/api/search/upload-faq": {
-      "post": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
     "/api/chat/{roomId}": {
       "get": {
         "description": "",
